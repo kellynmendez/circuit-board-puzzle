@@ -12,8 +12,11 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] GameObject[] _voltInventory;
 
     private GameManager _gameManager;
+    private BoardManager _boardManager;
     private GameObject _selected;
     private int _currRow;
+
+    /* constants */
     private int _numNormalRows = 2;
     private int _numVoltRows = 2;
 
@@ -26,6 +29,7 @@ public class InventoryManager : MonoBehaviour
     private void Awake()
     {
         _gameManager = FindObjectOfType<GameManager>();
+        _boardManager = FindObjectOfType<BoardManager>();
     }
 
     private void Start()
@@ -40,7 +44,7 @@ public class InventoryManager : MonoBehaviour
     {
         if (_gameManager.GetCurrentGameState() == GameManager.GameState.Inventory)
         {
-            HandleInventoryMovement();
+            HandleUserInput();
         }
     }
 
@@ -88,75 +92,93 @@ public class InventoryManager : MonoBehaviour
             _selected = _voltInventory[0];
         }
         // Activate selection
-        _selected.transform.GetChild(0).gameObject.SetActive(true);
+        _selected.transform.GetChild(1).gameObject.SetActive(true);
     }
 
     public void SwitchFromInventoryToBoard()
     {
         // Unselect the current selection
-        _selected.transform.GetChild(0).gameObject.SetActive(false);
+        _selected.transform.GetChild(1).gameObject.SetActive(false);
     }
 
-    private void HandleInventoryMovement()
+    private void HandleUserInput()
     {
-        if (CurrentInventoryState == InventoryState.NormalInventory)
+        // Add circuit to board
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            // Can only select a spot if it is within bounds of inventory
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            AddCircuit();
+        }
+        else
+        {
+            // Selecting from normal inventory circuits available
+            if (CurrentInventoryState == InventoryState.NormalInventory)
             {
-                if (_currRow + 1 < _numNormalRows)
+                // Can only select a spot if it is within bounds of inventory
+                if (Input.GetKeyDown(KeyCode.DownArrow))
                 {
-                    _currRow++;
-                    SelectSpot();
+                    if (_currRow + 1 < _numNormalRows)
+                    {
+                        _currRow++;
+                        SelectSpot();
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (_currRow - 1 >= 0)
+                    {
+                        _currRow--;
+                        SelectSpot();
+                    }
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            // Selecting from voltage inventory circuits available
+            else if (CurrentInventoryState == InventoryState.VoltInventory)
             {
-                if (_currRow - 1 >= 0)
+                // Can only select a spot if it is within bounds of inventory
+                if (Input.GetKeyDown(KeyCode.DownArrow))
                 {
-                    _currRow--;
-                    SelectSpot();
+                    if (_currRow + 1 < _numVoltRows)
+                    {
+                        _currRow++;
+                        SelectSpot();
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (_currRow - 1 >= 0)
+                    {
+                        _currRow--;
+                        SelectSpot();
+                    }
                 }
             }
         }
-        else if(CurrentInventoryState == InventoryState.VoltInventory)
-        {
-            // Can only select a spot if it is within bounds of inventory
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                if (_currRow + 1 < _numVoltRows)
-                {
-                    _currRow++;
-                    SelectSpot();
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                if (_currRow - 1 >= 0)
-                {
-                    _currRow--;
-                    SelectSpot();
-                }
-            }
-        }
+    }
+
+    private void AddCircuit()
+    {
+        // Adding the circuit
+        _boardManager.AddCircuitToBoard(_selected);
+        // Going back to the board
+        _gameManager.UpdateGameState(GameManager.GameState.CircuitBoard);
     }
 
     private void SelectSpot()
     {
         // Removing selection border from previous space
-        _selected.transform.GetChild(0).gameObject.SetActive(false);
+        _selected.transform.GetChild(1).gameObject.SetActive(false);
         // Selecting the new space
         if (CurrentInventoryState == InventoryState.NormalInventory)
         {
             _selected = _normalInventory[_currRow];
             // Activating selection border
-            _selected.transform.GetChild(0).gameObject.SetActive(true);
+            _selected.transform.GetChild(1).gameObject.SetActive(true);
         }
         else if (CurrentInventoryState == InventoryState.VoltInventory)
         {
             _selected = _voltInventory[_currRow];
             // Activating selection border
-            _selected.transform.GetChild(0).gameObject.SetActive(true);
+            _selected.transform.GetChild(1).gameObject.SetActive(true);
         }
     }
 

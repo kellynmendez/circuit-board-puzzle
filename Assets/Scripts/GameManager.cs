@@ -31,11 +31,15 @@ public class GameManager : MonoBehaviour
         // Switching between circuit board and inventory
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (CurrentGameState == GameState.CircuitBoard)
+            GameObject selected = _boardManager.GetCurrentSelection();
+            BoardPlace place = selected.transform.parent.gameObject.GetComponent<BoardPlace>();
+            // Can only go into inventory if current spot is empty
+            if (CurrentGameState == GameState.CircuitBoard && 
+                place.GetCurrentPlaceState() != BoardPlace.PlaceState.Filled)
             {
                 UpdateGameState(GameState.Inventory);
             }
-            else
+            else if (CurrentGameState == GameState.Inventory)
             {
                 UpdateGameState(GameState.CircuitBoard);
             }
