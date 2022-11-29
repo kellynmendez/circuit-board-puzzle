@@ -24,14 +24,15 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject _posOneCirc;
     [SerializeField] GameObject _posTwoCirc;
 
-    private Dictionary<string, GameObject> _circuitMap;
-    private GameObject[,] _circuitBoard;
+    protected Dictionary<string, GameObject> _circuitMap;
+    protected GameObject[,] _circuitBoard;
     private GameObject _selected;
     private int _currRow = 0;
     private int _currCol = 0;
 
     private InventoryManager _inventoryManager;
     private GameManager _gameManager;
+    private WinCondition _winCondition;
 
     /* constants */
     private int _numRows = 5;
@@ -73,6 +74,7 @@ public class BoardManager : MonoBehaviour
 
         _gameManager = FindObjectOfType<GameManager>();
         _inventoryManager = FindObjectOfType<InventoryManager>();
+        _winCondition = FindObjectOfType<WinCondition>();
     }
 
     private void Start()
@@ -229,10 +231,16 @@ public class BoardManager : MonoBehaviour
         // Setting board place state to filled
         GameObject parent = _selected.transform.parent.gameObject;
         parent.GetComponent<BoardPlace>().UpdatePlaceState(BoardPlace.PlaceState.Filled);
+
+        // Adding circuit to existing circuits list
+        _winCondition.AddToTotalCircuitsOnBoard(_selected);
     }
 
     private void RemoveCircuitFromBoard()
     {
+        // Removing circuit from existing circuits list
+        _winCondition.RemoveFromTotalCircuitsOnBoard(_selected);
+
         // Instantiating empty circuit prefab
         GameObject clone;
         if (_selected.GetComponent<Circuit>().GetIfVoltageSpot())
@@ -304,5 +312,15 @@ public class BoardManager : MonoBehaviour
         }
 
         rotating = false;
+    }
+
+    public Dictionary<string, GameObject> GetCircuitDictionary()
+    {
+        return _circuitMap;
+    }
+
+    public GameObject[,] GetCircuitBoard()
+    {
+        return _circuitBoard;
     }
 }

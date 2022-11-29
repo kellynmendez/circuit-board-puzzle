@@ -1932,6 +1932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: straight
   _locked: 0
   _voltageSpot: 0
@@ -3025,6 +3026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: posTwo
   _locked: 0
   _voltageSpot: 1
@@ -3079,6 +3081,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: posOne
   _locked: 0
   _voltageSpot: 1
@@ -4115,6 +4118,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1965725616}
   - component: {fileID: 1965725617}
+  - component: {fileID: 1965725618}
   m_Layer: 5
   m_Name: CircuitBoard
   m_TagString: Untagged
@@ -4197,6 +4201,21 @@ MonoBehaviour:
   _straightCirc: {fileID: 5369489031679099185, guid: fe694ca1e7b9d9841ba16e14c98d39cc, type: 3}
   _posOneCirc: {fileID: 3665350859830095678, guid: 2b909731342c9ef489b4cf77a2d94b83, type: 3}
   _posTwoCirc: {fileID: 6497180707436701807, guid: 15375f9592dcb544e88bfdb90a8b044b, type: 3}
+--- !u!114 &1965725618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965725615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d82d817b585ee27488491035f6796126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startCircuit: {fileID: 1639665174}
+  _endCircuit: {fileID: 1051169344}
+  _negativeCircuit: {fileID: 1605177318}
 --- !u!1 &1982515880
 GameObject:
   m_ObjectHideFlags: 0
@@ -4379,6 +4398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: corner
   _locked: 0
   _voltageSpot: 0
