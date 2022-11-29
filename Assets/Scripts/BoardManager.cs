@@ -24,12 +24,14 @@ public class BoardManager : MonoBehaviour
     [SerializeField] GameObject _posOneCirc;
     [SerializeField] GameObject _posTwoCirc;
 
+    [Header("Constants")]
+    [SerializeField] float _rotationSpeed = 300f;
+
     protected Dictionary<string, GameObject> _circuitMap;
     protected GameObject[,] _circuitBoard;
     private GameObject _selected;
-    private float _rotationSpeed = 300f;
-    private int _currRow = 0;
-    private int _currCol = 0;
+    private int _currRow = 3;
+    private int _currCol = 2;
 
     private InventoryManager _inventoryManager;
     private GameManager _gameManager;
@@ -241,6 +243,14 @@ public class BoardManager : MonoBehaviour
     {
         // Removing circuit from existing circuits list
         _winCondition.RemoveFromTotalCircuitsOnBoard(_selected);
+
+        // Disconnect the colliders of other circuits connected to this one
+        List<CircuitCollider> connectedList = _selected.GetComponent<Circuit>().GetConnectedList();
+        for (int i = 0; i < connectedList.Count; i++)
+        {
+            connectedList[i].SetConnected(false);
+            //Debug.Log($"{connectedList[i]} {connectedList[i].transform.parent.transform.parent.name} set connected to false");
+        }
 
         // Instantiating empty circuit prefab
         GameObject clone;

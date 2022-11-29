@@ -30,11 +30,11 @@ public class Circuit : MonoBehaviour
             CheckIfConnected();
         }
 
-        string str = "";
+        /*string str = "";
         for (int i = 0; i < _collidersConnected.Count; i++)
         {
             str += _collidersConnected[i].gameObject.name + ", ";
-        }Debug.Log(str);
+        }Debug.Log(str);*/
     }
 
     private void CheckIfConnected()
@@ -44,13 +44,9 @@ public class Circuit : MonoBehaviour
         {
             CircuitCollider collider = _colliders[i];
             checkConnected = collider.GetConnected();
+            Debug.Log($"{checkConnected}");
         }
         connected = checkConnected;
-
-        if (checkConnected)
-        {
-            Debug.Log($"{gameObject.name} is connected");
-        }
     }
 
     public string GetCircuitDictionaryKey()
@@ -71,6 +67,11 @@ public class Circuit : MonoBehaviour
     public bool GetIfConnected()
     {
         return connected;
+    }
+
+    public List<CircuitCollider> GetConnectedList()
+    {
+        return _collidersConnected;
     }
 
     public void AddColliderToConnectedList(CircuitCollider circuit)
