@@ -27,6 +27,7 @@ public class BoardManager : MonoBehaviour
     protected Dictionary<string, GameObject> _circuitMap;
     protected GameObject[,] _circuitBoard;
     private GameObject _selected;
+    private float _rotationSpeed = 300f;
     private int _currRow = 0;
     private int _currCol = 0;
 
@@ -297,20 +298,16 @@ public class BoardManager : MonoBehaviour
     private IEnumerator Rotate(GameObject circuit, float angle)
     {
         rotating = true;
-
-        float elapsedTime = 0;
-        float duration = 1f;
         Quaternion targetRotation = circuit.transform.rotation * Quaternion.Euler(0, 0, angle);
-        while (elapsedTime < duration)
+        while (targetRotation != circuit.transform.rotation)
         {
             circuit.transform.rotation = Quaternion.RotateTowards(
                 circuit.transform.rotation,
                 targetRotation,
-                elapsedTime / duration);
-            elapsedTime += Time.deltaTime;
+                _rotationSpeed * Time.deltaTime);
             yield return null;
         }
-
+        circuit.transform.rotation = targetRotation;
         rotating = false;
     }
 

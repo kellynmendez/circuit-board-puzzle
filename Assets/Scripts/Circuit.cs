@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Circuit : MonoBehaviour
 {
-    // Array of colliders
+    // Array of this circuit's colliders
     [SerializeField] CircuitCollider[] _colliders;
     // Key to get circuit from circuit dictionary
     [SerializeField] string _circuitDictKey;
@@ -13,7 +13,15 @@ public class Circuit : MonoBehaviour
     // If spot is a voltage spot
     [SerializeField] bool _voltageSpot;
 
+    // List of colliders on other circuits that are connected to this one
+    private List<CircuitCollider> _collidersConnected;
+
     private bool connected = false;
+
+    private void Awake()
+    {
+        _collidersConnected = new List<CircuitCollider>();
+    }
 
     private void Update()
     {
@@ -21,6 +29,12 @@ public class Circuit : MonoBehaviour
         {
             CheckIfConnected();
         }
+
+        string str = "";
+        for (int i = 0; i < _collidersConnected.Count; i++)
+        {
+            str += _collidersConnected[i].gameObject.name + ", ";
+        }Debug.Log(str);
     }
 
     private void CheckIfConnected()
@@ -57,5 +71,15 @@ public class Circuit : MonoBehaviour
     public bool GetIfConnected()
     {
         return connected;
+    }
+
+    public void AddColliderToConnectedList(CircuitCollider circuit)
+    {
+        _collidersConnected.Add(circuit);
+    }
+
+    public void RemoveColliderFromConnectedList(CircuitCollider circuit)
+    {
+        _collidersConnected.Remove(circuit);
     }
 }
