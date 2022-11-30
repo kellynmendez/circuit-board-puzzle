@@ -50,6 +50,11 @@ public class GameManager : MonoBehaviour
                 UpdateGameState(GameState.CircuitBoard);
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     public void UpdateGameState(GameState gameState)
