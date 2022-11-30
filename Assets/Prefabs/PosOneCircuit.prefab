@@ -303,6 +303,7 @@ MonoBehaviour:
   _circuitDictKey: posOne
   _locked: 0
   _voltageSpot: 1
+  _voltage: 1
   _empty: 0
   _start: 0
   _connectionLine: {fileID: 265161926074880505}

@@ -1936,9 +1936,10 @@ MonoBehaviour:
   _circuitDictKey: straight
   _locked: 0
   _voltageSpot: 0
+  _voltage: 0
   _empty: 1
   _start: 0
-  connectionLine: {fileID: 0}
+  _connectionLine: {fileID: 0}
   _connectedToStart: 0
 --- !u!4 &1104291656
 Transform:
@@ -2655,6 +2656,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1398285759}
   - component: {fileID: 1398285758}
+  - component: {fileID: 1398285760}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2689,6 +2691,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1398285760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398285757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd66ea6e962a4464b91ac660d95e06a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _actualVoltageTxt: {fileID: 1438191545}
+  _actualVoltageNumTxt: {fileID: 1819915350}
+  _targetVoltageTxt: {fileID: 1316464593}
+  _targetVoltageNumTxt: {fileID: 746430683}
 --- !u!1001 &1410364051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3034,9 +3052,10 @@ MonoBehaviour:
   _circuitDictKey: posTwo
   _locked: 0
   _voltageSpot: 1
+  _voltage: 0
   _empty: 1
   _start: 0
-  connectionLine: {fileID: 0}
+  _connectionLine: {fileID: 0}
   _connectedToStart: 0
 --- !u!1 &1556881524
 GameObject:
@@ -3093,9 +3112,10 @@ MonoBehaviour:
   _circuitDictKey: posOne
   _locked: 0
   _voltageSpot: 1
+  _voltage: 0
   _empty: 1
   _start: 0
-  connectionLine: {fileID: 0}
+  _connectionLine: {fileID: 0}
   _connectedToStart: 0
 --- !u!1001 &1558697220
 PrefabInstance:
@@ -4238,6 +4258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d82d817b585ee27488491035f6796126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _winVoltage: 4
   _startCircuit: {fileID: 1639665174}
   _endCircuit: {fileID: 1051169344}
   _negativeCircuit: {fileID: 1605177318}
@@ -4440,9 +4461,10 @@ MonoBehaviour:
   _circuitDictKey: corner
   _locked: 0
   _voltageSpot: 0
+  _voltage: 0
   _empty: 1
   _start: 0
-  connectionLine: {fileID: 0}
+  _connectionLine: {fileID: 0}
   _connectedToStart: 0
 --- !u!1 &2053660085
 GameObject:

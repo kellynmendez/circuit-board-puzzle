@@ -9,13 +9,13 @@ public class WinCondition : MonoBehaviour
     [SerializeField] GameObject _negativeCircuit;
 
     private List<Circuit> _circuits;
-    private BoardManager _boardManager;
+    private ActivateConnectionLine _connectionLine;
     bool win = false;
 
     private void Awake()
     {
-        _boardManager = FindObjectOfType<BoardManager>();
         _circuits = new List<Circuit>();
+        _connectionLine = FindObjectOfType<ActivateConnectionLine>();
     }
 
     private void Start()
@@ -36,17 +36,19 @@ public class WinCondition : MonoBehaviour
         }Debug.Log(str);*/
     }
     
-    private void CheckForWin()
+    public void CheckForWin()
     {
         bool connected = true;
         for (int i = 0; i < _circuits.Count && connected; i++)
         {
             connected = _circuits[i].GetIfConnected();
-            //Debug.Log($"{_circuits[i].gameObject.name} {connected}");
         }
         win = connected;
 
-        if (win)
+        bool voltageMet = _connectionLine.CheckForVoltage();
+
+        // win if circuits connected start to end and voltage is correct
+        if (win && voltageMet)
         {
             Debug.Log("Game won!");
         }
@@ -66,5 +68,4 @@ public class WinCondition : MonoBehaviour
     {
         return _circuits;
     }
-
 }

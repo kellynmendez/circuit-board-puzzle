@@ -405,6 +405,7 @@ MonoBehaviour:
   _circuitDictKey: negOne
   _locked: 1
   _voltageSpot: 0
+  _voltage: -1
   _empty: 0
   _start: 0
   _connectionLine: {fileID: 8585470349347290211}

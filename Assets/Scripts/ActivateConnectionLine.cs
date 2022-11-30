@@ -9,11 +9,27 @@ public class ActivateConnectionLine : MonoBehaviour
     [SerializeField] Circuit _startCircuit;
 
     private WinCondition _winCondition;
+    private UIManager _uiManager;
+    private int _targetVoltage;
+    private int _currentVoltage = 0;
+    private bool _targetVoltageMet = false;
 
     private void Awake()
     {
         _circuitPath = new List<Circuit>();
         _winCondition = FindObjectOfType<WinCondition>();
+        _uiManager = FindObjectOfType<UIManager>();
+    }
+
+    private void Start()
+    {
+        _targetVoltage = _uiManager.GetTargetVoltage();
+    }
+
+    private void Update()
+    {
+        CheckForVoltage();
+        Debug.Log(_targetVoltageMet);
     }
 
     public void UpdateCircuitPath()
@@ -35,7 +51,6 @@ public class ActivateConnectionLine : MonoBehaviour
         {
             Circuit check = startConList[i].GetCircuit();
             // If the circuit connected to this one is not its previous, then it is its next
-            //    Because this is the last circuit in the path, it does not have a next
             if (check != startPrev)
             {
                 addedAfterStart = true;
@@ -62,7 +77,6 @@ public class ActivateConnectionLine : MonoBehaviour
                 {
                     Circuit check = connectedList[i].GetCircuit();
                     // If the circuit connected to this one is not its previous, then it is its next
-                    //    Because this is the last circuit in the path, it does not have a next
                     if (check && check != prev)
                     {
                         added = true;
@@ -124,5 +138,36 @@ public class ActivateConnectionLine : MonoBehaviour
         {
             c.GetPreviousCircuit().SetNextCircuit(null);
         }
+    }
+
+    public bool CheckForVoltage()
+    {
+        int voltage = 0;
+        for (int i = 0; i < _circuitPath.Count; i++)
+        {
+            voltage += _circuitPath[i].GetVoltage();
+        }
+
+        if (_currentVoltage != voltage)
+        {
+            // Updating voltage
+            _currentVoltage = voltage;
+            if (_currentVoltage != _targetVoltage)
+            {
+                _targetVoltageMet = false;
+            }
+            else
+            {
+                _targetVoltageMet = true;
+            }
+            _uiManager.UpdateCurrentVoltage(voltage);
+        }
+
+        return _targetVoltageMet;
+    }
+
+    public bool GetIfTargetVoltageMet()
+    {
+        return _targetVoltageMet;
     }
 }

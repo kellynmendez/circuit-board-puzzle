@@ -250,6 +250,7 @@ MonoBehaviour:
   _circuitDictKey: posTwo
   _locked: 0
   _voltageSpot: 1
+  _voltage: 2
   _empty: 0
   _start: 0
   _connectionLine: {fileID: 8702079858889817563}

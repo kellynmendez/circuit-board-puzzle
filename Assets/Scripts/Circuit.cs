@@ -12,6 +12,8 @@ public class Circuit : MonoBehaviour
     [SerializeField] bool _locked;
     // If circuit is a voltage circuit
     [SerializeField] bool _voltageSpot;
+    // Voltage
+    [SerializeField] int _voltage;
     // If circuit is empty
     [SerializeField] bool _empty;
     // If circuit is start circuit
@@ -151,5 +153,10 @@ public class Circuit : MonoBehaviour
     public void SetPreviousCircuit(Circuit c)
     {
         _prevCircuit = c;
+    }
+
+    public int GetVoltage()
+    {
+        return _voltage;
     }
 }
