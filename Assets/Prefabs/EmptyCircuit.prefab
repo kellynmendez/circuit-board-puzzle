@@ -198,6 +198,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: empty
   _locked: 0
   _voltageSpot: 0
+  _empty: 1

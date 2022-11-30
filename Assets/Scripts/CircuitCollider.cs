@@ -5,7 +5,7 @@ using UnityEngine;
 public class CircuitCollider : MonoBehaviour
 {
     private Circuit _parentCircuit;
-    [SerializeField] bool connected = false;
+    [SerializeField] bool _connected = false;
 
     private void Awake()
     {
@@ -14,25 +14,40 @@ public class CircuitCollider : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        connected = true;
-        _parentCircuit.AddColliderToConnectedList(collision.gameObject.GetComponent<CircuitCollider>());
-        Debug.Log("connected with another circuit");
+        _connected = true;
+        CircuitCollider other = collision.gameObject.GetComponent<CircuitCollider>();
+        _parentCircuit.AddColliderToConnectedList(other);
+
+        if (other.GetCircuit().GetConnectedToStart())
+        {
+            _parentCircuit.SetConnectedToStart(true);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        connected = false;
-        _parentCircuit.RemoveColliderFromConnectedList(collision.gameObject.GetComponent<CircuitCollider>());
-        Debug.Log("circuit is no longer connected");
+        _connected = false;
+        CircuitCollider other = collision.gameObject.GetComponent<CircuitCollider>();
+        _parentCircuit.RemoveColliderFromConnectedList(other);
+
+        if (other.GetCircuit().GetConnectedToStart())
+        {
+            _parentCircuit.SetConnectedToStart(false);
+        }
     }
 
     public bool GetConnected()
     {
-        return connected;
+        return _connected;
     }
 
     public void SetConnected(bool c)
     {
-        connected = c;
+        _connected = c;
+    }
+
+    public Circuit GetCircuit()
+    {
+        return _parentCircuit;
     }
 }

@@ -10,31 +10,48 @@ public class Circuit : MonoBehaviour
     [SerializeField] string _circuitDictKey;
     // If locked, cannot select on board
     [SerializeField] bool _locked;
-    // If spot is a voltage spot
+    // If circuit is a voltage circuit
     [SerializeField] bool _voltageSpot;
+    // If circuit is empty
+    [SerializeField] bool _empty;
+    // If circuit is start circuit
+    [SerializeField] bool _start;
+    // Line game object
+    [SerializeField] GameObject _connectionLine;
+    // If the circuit is connected to start (this is when connection line should be activated)
+    //      Note that the start circuit will always have this set to true
+    [SerializeField] bool _connectedToStart = false;
 
+    private Circuit _prevCircuit;
+    private Circuit _nextCircuit;
     // List of colliders on other circuits that are connected to this one
     private List<CircuitCollider> _collidersConnected;
-
-    private bool connected = false;
+    // Whether circuit is fully connected (all ends connected to another)
+    private bool _connected = false;
 
     private void Awake()
     {
         _collidersConnected = new List<CircuitCollider>();
     }
 
+    private void Start()
+    {
+        if (_start)
+        {
+            ActivateConnectedLine();
+            _prevCircuit = null;
+        }
+    }
+
     private void Update()
     {
         if (_colliders.Length > 0)
         {
+            // Checking if circuit is connected for win condition
+            //    A circuit is connected if both ends of the circuit are connected to other circuit ends
             CheckIfConnected();
         }
 
-        /*string str = "";
-        for (int i = 0; i < _collidersConnected.Count; i++)
-        {
-            str += _collidersConnected[i].gameObject.name + ", ";
-        }Debug.Log(str);*/
     }
 
     private void CheckIfConnected()
@@ -44,9 +61,26 @@ public class Circuit : MonoBehaviour
         {
             CircuitCollider collider = _colliders[i];
             checkConnected = collider.GetConnected();
-            Debug.Log($"{checkConnected}");
         }
-        connected = checkConnected;
+        _connected = checkConnected;
+    }
+
+    public void ActivateConnectedLine()
+    { 
+        if (!_empty && !_connectionLine.activeSelf)
+        {
+            // activate line
+            _connectionLine.SetActive(true);
+        }
+    }
+
+    public void DeactivateConnectedLine()
+    {
+        if (!_empty && _connectionLine.activeSelf)
+        {
+            // deactivate line
+            _connectionLine.SetActive(false);
+        }
     }
 
     public string GetCircuitDictionaryKey()
@@ -66,7 +100,17 @@ public class Circuit : MonoBehaviour
 
     public bool GetIfConnected()
     {
-        return connected;
+        return _connected;
+    }
+
+    public bool GetConnectedToStart()
+    {
+        return _connectedToStart;
+    }
+
+    public void SetConnectedToStart(bool c)
+    {
+        _connectedToStart = c;
     }
 
     public List<CircuitCollider> GetConnectedList()
@@ -82,5 +126,30 @@ public class Circuit : MonoBehaviour
     public void RemoveColliderFromConnectedList(CircuitCollider circuit)
     {
         _collidersConnected.Remove(circuit);
+    }
+
+    public void ClearConnectedList()
+    {
+        _collidersConnected.Clear();
+    }
+
+    public Circuit GetNextCircuit()
+    {
+        return _nextCircuit;
+    }
+
+    public void SetNextCircuit(Circuit c)
+    {
+        _nextCircuit = c;
+    }
+
+    public Circuit GetPreviousCircuit()
+    {
+        return _prevCircuit;
+    }
+
+    public void SetPreviousCircuit(Circuit c)
+    {
+        _prevCircuit = c;
     }
 }

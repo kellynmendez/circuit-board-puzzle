@@ -46,9 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec5895dfcce2957409eaa6eaaad7f612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _colliders: []
   _circuitDictKey: locked
   _locked: 1
   _voltageSpot: 0
+  _empty: 1
 --- !u!1 &5067957933351523578
 GameObject:
   m_ObjectHideFlags: 0

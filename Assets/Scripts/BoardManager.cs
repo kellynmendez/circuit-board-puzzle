@@ -36,6 +36,7 @@ public class BoardManager : MonoBehaviour
     private InventoryManager _inventoryManager;
     private GameManager _gameManager;
     private WinCondition _winCondition;
+    private ActivateConnectionLine _connectLines;
 
     /* constants */
     private int _numRows = 5;
@@ -78,6 +79,7 @@ public class BoardManager : MonoBehaviour
         _gameManager = FindObjectOfType<GameManager>();
         _inventoryManager = FindObjectOfType<InventoryManager>();
         _winCondition = FindObjectOfType<WinCondition>();
+        _connectLines = FindObjectOfType<ActivateConnectionLine>();
     }
 
     private void Start()
@@ -236,25 +238,32 @@ public class BoardManager : MonoBehaviour
         parent.GetComponent<BoardPlace>().UpdatePlaceState(BoardPlace.PlaceState.Filled);
 
         // Adding circuit to existing circuits list
-        _winCondition.AddToTotalCircuitsOnBoard(_selected);
+        _winCondition.AddToTotalCircuitsOnBoard(_selected.GetComponent<Circuit>());
+
+        // Negligible wait for colliders to update before updating path
+        StartCoroutine(UpdateConnectedCircuitPath());
     }
 
     private void RemoveCircuitFromBoard()
     {
+        Circuit remove = _selected.GetComponent<Circuit>();
         // Removing circuit from existing circuits list
-        _winCondition.RemoveFromTotalCircuitsOnBoard(_selected);
+        _winCondition.RemoveFromTotalCircuitsOnBoard(remove);
 
         // Disconnect the colliders of other circuits connected to this one
-        List<CircuitCollider> connectedList = _selected.GetComponent<Circuit>().GetConnectedList();
+        List<CircuitCollider> connectedList = remove.GetConnectedList();
         for (int i = 0; i < connectedList.Count; i++)
         {
             connectedList[i].SetConnected(false);
-            //Debug.Log($"{connectedList[i]} {connectedList[i].transform.parent.transform.parent.name} set connected to false");
         }
+        remove.ClearConnectedList();
+
+        // Removing circuit from path
+        _connectLines.RemoveCircuitFromPath(remove);
 
         // Instantiating empty circuit prefab
         GameObject clone;
-        if (_selected.GetComponent<Circuit>().GetIfVoltageSpot())
+        if (remove.GetIfVoltageSpot())
         {
             clone = Instantiate(_emptyVoltCirc);
         }
@@ -267,6 +276,9 @@ public class BoardManager : MonoBehaviour
         // Setting board place state to empty
         GameObject parent = _selected.transform.parent.gameObject;
         parent.GetComponent<BoardPlace>().UpdatePlaceState(BoardPlace.PlaceState.Empty);
+
+        // Negligible wait for colliders to update before updating path
+        StartCoroutine(UpdateConnectedCircuitPath());
     }
 
     private void ReplaceSelectedWithGiven(GameObject prefabClone)
@@ -319,6 +331,9 @@ public class BoardManager : MonoBehaviour
         }
         circuit.transform.rotation = targetRotation;
         rotating = false;
+
+        // Negligible wait for colliders to update before updating path
+        StartCoroutine(UpdateConnectedCircuitPath());
     }
 
     public Dictionary<string, GameObject> GetCircuitDictionary()
@@ -329,5 +344,11 @@ public class BoardManager : MonoBehaviour
     public GameObject[,] GetCircuitBoard()
     {
         return _circuitBoard;
+    }
+
+    private IEnumerator UpdateConnectedCircuitPath()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _connectLines.UpdateCircuitPath();
     }
 }
