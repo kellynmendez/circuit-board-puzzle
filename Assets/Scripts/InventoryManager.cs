@@ -16,6 +16,10 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] Sprite _selectedSprite;
     [SerializeField] Sprite _noMoreItemSelSprite;
 
+    [Header("Constants")]
+    [SerializeField] float _scaleDuration = 0.25f;
+    [SerializeField] float _timeIntervalBwScale = 0.015f;
+
     [Header("Feedback")]
     [SerializeField] AudioClip _addOrRemSFX = null;
     [SerializeField] AudioClip _selectFX = null;
@@ -107,6 +111,7 @@ public class InventoryManager : MonoBehaviour
 
     public void SwitchFromBoardToInventory()
     {
+        StartCoroutine(MaximizeInventoryScreen());
         // Set row to the first object in inventory
         _currRow = 0;
         // Update current selected object to be the first object in inventory
@@ -124,6 +129,7 @@ public class InventoryManager : MonoBehaviour
 
     public void SwitchFromInventoryToBoard()
     {
+        StartCoroutine(MinimizeInventoryScreen());
         // Unselect the current selection
         _selected.transform.GetChild(1).gameObject.SetActive(false);
     }
@@ -261,5 +267,35 @@ public class InventoryManager : MonoBehaviour
         {
             _audioSource.PlayOneShot(_selectFX, _audioSource.volume);
         }
+    }
+
+    private IEnumerator MinimizeInventoryScreen()
+    {
+        float start = Time.time;
+        while (start + _scaleDuration > Time.time)
+        {
+            // Slowly shrink screen
+            gameObject.transform.localScale = new Vector3(
+                gameObject.transform.localScale.x  * 0.99f,
+                gameObject.transform.localScale.y * 0.99f,
+                gameObject.transform.localScale.z);
+            yield return new WaitForSeconds(_timeIntervalBwScale);
+        }
+        yield break;
+    }
+
+    private IEnumerator MaximizeInventoryScreen()
+    {
+        float start = Time.time;
+        while (start + _scaleDuration > Time.time)
+        {
+            // Slowly shrink screen
+            gameObject.transform.localScale = new Vector3(
+                gameObject.transform.localScale.x * 1.01f,
+                gameObject.transform.localScale.y * 1.01f,
+                gameObject.transform.localScale.z);
+            yield return new WaitForSeconds(_timeIntervalBwScale);
+        }
+        yield break;
     }
 }

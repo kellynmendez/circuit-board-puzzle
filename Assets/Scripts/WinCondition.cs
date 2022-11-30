@@ -47,7 +47,6 @@ public class WinCondition : MonoBehaviour
         bool voltageMet = _connectionLine.CheckForVoltage();
         if (voltageMet && _win)
         {
-            Debug.Log("WIN");
             Win();
         }
     }
@@ -70,13 +69,14 @@ public class WinCondition : MonoBehaviour
     private void Win()
     {
         PlayWinFX();
-        Time.timeScale = 0;
         StartCoroutine(WaitBeforeShowingWinScren());
     }
 
     private IEnumerator WaitBeforeShowingWinScren()
     {
-        yield return new WaitForSecondsRealtime(3.0f);
+        yield return new WaitForSecondsRealtime(0.2f);
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(2.0f);
         Time.timeScale = 1;
         _uiManager.ShowWinScreen();
     }
