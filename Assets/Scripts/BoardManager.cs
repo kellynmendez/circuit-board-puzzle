@@ -27,8 +27,12 @@ public class BoardManager : MonoBehaviour
     [Header("Constants")]
     [SerializeField] float _rotationSpeed = 300f;
 
-    protected Dictionary<string, GameObject> _circuitMap;
-    protected GameObject[,] _circuitBoard;
+    [Header("Feedback")]
+    [SerializeField] AudioClip _rotateSFX = null;
+    [SerializeField] AudioClip _selectFX = null;
+
+    AudioSource _audioSource = null;
+    private GameObject[,] _circuitBoard;
     private GameObject _selected;
     private int _currRow = 3;
     private int _currCol = 2;
@@ -45,10 +49,12 @@ public class BoardManager : MonoBehaviour
     private string _straightCircKey = "straight";
     private string _cornerCircKey = "corner";
     private string _posOneCircKey = "posOne";
-    private string _posTwoCircKey = "posTwo";
+    //private string _posTwoCircKey = "posTwo";
 
     private void Awake()
     {
+        rotating = false;
+
         // Initializing game object 2d array
         _circuitBoard = new GameObject[_numRows, _numCols];
 
@@ -69,13 +75,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // Initializing circuit dictionary
-        _circuitMap = new Dictionary<string, GameObject>();
-        _circuitMap.Add(_straightCircKey, _straightCirc);
-        _circuitMap.Add(_cornerCircKey, _cornerCirc);
-        _circuitMap.Add(_posOneCircKey, _posOneCirc);
-        _circuitMap.Add(_posTwoCircKey, _posTwoCirc);
-
+        _audioSource = GetComponent<AudioSource>();
         _gameManager = FindObjectOfType<GameManager>();
         _inventoryManager = FindObjectOfType<InventoryManager>();
         _winCondition = FindObjectOfType<WinCondition>();
@@ -108,6 +108,7 @@ public class BoardManager : MonoBehaviour
 
     private void ChangeSelection()
     {
+        PlaySelectFX();
         // Removing selection border from previous space
         GameObject prevGOBorder = _selected.transform.GetChild(1).gameObject;
         prevGOBorder.GetComponent<Image>().sprite = _borderSprite;
@@ -250,6 +251,9 @@ public class BoardManager : MonoBehaviour
         // Removing circuit from existing circuits list
         _winCondition.RemoveFromTotalCircuitsOnBoard(remove);
 
+        // Add back to inventory
+        _inventoryManager.RemoveCircuitFromBoard(remove.GetCircuitDictionaryKey());
+
         // Disconnect the colliders of other circuits connected to this one
         List<CircuitCollider> connectedList = remove.GetConnectedList();
         for (int i = 0; i < connectedList.Count; i++)
@@ -319,6 +323,8 @@ public class BoardManager : MonoBehaviour
 
     private IEnumerator Rotate(GameObject circuit, float angle)
     {
+        PlayRotateFX();
+
         rotating = true;
         Quaternion targetRotation = circuit.transform.rotation * Quaternion.Euler(0, 0, angle);
         while (targetRotation != circuit.transform.rotation)
@@ -336,19 +342,25 @@ public class BoardManager : MonoBehaviour
         StartCoroutine(UpdateConnectedCircuitPath());
     }
 
-    public Dictionary<string, GameObject> GetCircuitDictionary()
-    {
-        return _circuitMap;
-    }
-
-    public GameObject[,] GetCircuitBoard()
-    {
-        return _circuitBoard;
-    }
-
     private IEnumerator UpdateConnectedCircuitPath()
     {
         yield return new WaitForSeconds(0.05f);
         _connectLines.UpdateCircuitPath();
+    }
+
+    void PlayRotateFX()
+    {
+        if (_audioSource != null && _rotateSFX != null)
+        {
+            _audioSource.PlayOneShot(_rotateSFX, _audioSource.volume);
+        }
+    }
+
+    private void PlaySelectFX()
+    {
+        if (_audioSource != null && _selectFX != null)
+        {
+            _audioSource.PlayOneShot(_selectFX, _audioSource.volume);
+        }
     }
 }

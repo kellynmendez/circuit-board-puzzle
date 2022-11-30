@@ -8,14 +8,23 @@ public class WinCondition : MonoBehaviour
     [SerializeField] GameObject _endCircuit;
     [SerializeField] GameObject _negativeCircuit;
 
+    [Header("Feedback")]
+    [SerializeField] AudioClip _winFX = null;
+
+    AudioSource _audioSource = null;
+
     private List<Circuit> _circuits;
     private ActivateConnectionLine _connectionLine;
-    bool win = false;
+    private UIManager _uiManager;
+    bool _win = false;
 
     private void Awake()
     {
+        _win = false;
+        _audioSource = GetComponent<AudioSource>();
         _circuits = new List<Circuit>();
         _connectionLine = FindObjectOfType<ActivateConnectionLine>();
+        _uiManager = FindObjectOfType<UIManager>();
     }
 
     private void Start()
@@ -23,17 +32,6 @@ public class WinCondition : MonoBehaviour
         _circuits.Add(_endCircuit.GetComponent<Circuit>());
         _circuits.Add(_negativeCircuit.GetComponent<Circuit>());
         _circuits.Add(_startCircuit.GetComponent<Circuit>());
-    }
-
-    void Update()
-    {
-        CheckForWin();
-
-        /*string str = "";
-        for (int i = 0; i < _circuits.Count; i++)
-        {
-            str += _circuits[i].gameObject.name + ", ";
-        }Debug.Log(str);*/
     }
     
     public void CheckForWin()
@@ -43,14 +41,14 @@ public class WinCondition : MonoBehaviour
         {
             connected = _circuits[i].GetIfConnected();
         }
-        win = connected;
-
-        bool voltageMet = _connectionLine.CheckForVoltage();
+        _win = connected;
 
         // win if circuits connected start to end and voltage is correct
-        if (win && voltageMet)
+        bool voltageMet = _connectionLine.CheckForVoltage();
+        if (voltageMet && _win)
         {
-            Debug.Log("Game won!");
+            Debug.Log("WIN");
+            Win();
         }
     }
 
@@ -67,5 +65,27 @@ public class WinCondition : MonoBehaviour
     public List<Circuit> GetAllCircuitsOnBoard()
     {
         return _circuits;
+    }
+
+    private void Win()
+    {
+        PlayWinFX();
+        Time.timeScale = 0;
+        StartCoroutine(WaitBeforeShowingWinScren());
+    }
+
+    private IEnumerator WaitBeforeShowingWinScren()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+        Time.timeScale = 1;
+        _uiManager.ShowWinScreen();
+    }
+
+    private void PlayWinFX()
+    {
+        if (_audioSource != null && _winFX != null)
+        {
+            _audioSource.PlayOneShot(_winFX, _audioSource.volume);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -10,6 +11,18 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] GameObject _voltageInventoryView;
     [SerializeField] GameObject[] _normalInventory;
     [SerializeField] GameObject[] _voltInventory;
+
+    [Header("Sprites")]
+    [SerializeField] Sprite _selectedSprite;
+    [SerializeField] Sprite _noMoreItemSelSprite;
+
+    [Header("Feedback")]
+    [SerializeField] AudioClip _addOrRemSFX = null;
+    [SerializeField] AudioClip _selectFX = null;
+
+    AudioSource _audioSource = null;
+
+    private Dictionary<string, InventoryItem> _inventoryMap;
 
     private GameManager _gameManager;
     private BoardManager _boardManager;
@@ -28,12 +41,26 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
+        _inventoryMap = new Dictionary<string, InventoryItem>();
         _gameManager = FindObjectOfType<GameManager>();
         _boardManager = FindObjectOfType<BoardManager>();
     }
 
     private void Start()
     {
+        // Populating circuit dictionary
+        foreach (GameObject circ in _normalInventory)
+        {
+            _inventoryMap.Add(circ.GetComponent<Circuit>().GetCircuitDictionaryKey(), 
+                circ.GetComponent<InventoryItem>());
+        }
+        foreach (GameObject circ in _voltInventory)
+        {
+            _inventoryMap.Add(circ.GetComponent<Circuit>().GetCircuitDictionaryKey(),
+                circ.GetComponent<InventoryItem>());
+        }
+
         // Setting starting inventory state
         UpdateGameState(InventoryState.NormalInventory);
         _currRow = 0;
@@ -91,8 +118,8 @@ public class InventoryManager : MonoBehaviour
         {
             _selected = _voltInventory[0];
         }
-        // Activate selection
-        _selected.transform.GetChild(1).gameObject.SetActive(true);
+        // Setting border according to items left and activating
+        SelectAndActivateBorder();
     }
 
     public void SwitchFromInventoryToBoard()
@@ -106,7 +133,14 @@ public class InventoryManager : MonoBehaviour
         // Add circuit to board
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            AddCircuit();
+            InventoryItem circuit = _selected.GetComponent<InventoryItem>();
+            if (!circuit.GetItemEmpty())
+            {
+                // Adding circuit to board
+                AddCircuitToBoard();
+                // Removing from inventory
+                circuit.RemoveItem();
+            }
         }
         else
         {
@@ -155,35 +189,77 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    private void AddCircuit()
+    private void AddCircuitToBoard()
     {
         // Adding the circuit
         _boardManager.AddCircuitToBoard(_selected);
+        // Play audio
+        PlayAddOrRemoveFX();
         // Going back to the board
         _gameManager.UpdateGameState(GameManager.GameState.CircuitBoard);
     }
 
+    public void RemoveCircuitFromBoard(string circuitKey)
+    {
+        // Play audio
+        PlayAddOrRemoveFX();
+        // Adding item back to inventory
+        InventoryItem item = _inventoryMap[circuitKey];
+        item.AddItemBack();
+    }
+
     private void SelectSpot()
     {
+        PlaySelectFX();
         // Removing selection border from previous space
         _selected.transform.GetChild(1).gameObject.SetActive(false);
         // Selecting the new space
         if (CurrentInventoryState == InventoryState.NormalInventory)
         {
             _selected = _normalInventory[_currRow];
-            // Activating selection border
-            _selected.transform.GetChild(1).gameObject.SetActive(true);
+            // Setting border according to items left and activating
+            SelectAndActivateBorder();
         }
         else if (CurrentInventoryState == InventoryState.VoltInventory)
         {
             _selected = _voltInventory[_currRow];
-            // Activating selection border
-            _selected.transform.GetChild(1).gameObject.SetActive(true);
+            // Setting border according to items left and activating
+            SelectAndActivateBorder();
         }
+    }
+
+    private void SelectAndActivateBorder()
+    {
+        int num = _selected.GetComponent<InventoryItem>().GetNumberItemsLeft();
+        if (num == 0)
+        {
+            _selected.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = _noMoreItemSelSprite;
+        }
+        else
+        {
+            _selected.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = _selectedSprite;
+        }
+        _selected.transform.GetChild(1).gameObject.SetActive(true);
     }
 
     public InventoryState GetCurrentInventoryState()
     {
         return CurrentInventoryState;
+    }
+
+    private void PlayAddOrRemoveFX()
+    {
+        if (_audioSource != null && _addOrRemSFX != null)
+        {
+            _audioSource.PlayOneShot(_addOrRemSFX, _audioSource.volume);
+        }
+    }
+
+    private void PlaySelectFX()
+    {
+        if (_audioSource != null && _selectFX != null)
+        {
+            _audioSource.PlayOneShot(_selectFX, _audioSource.volume);
+        }
     }
 }

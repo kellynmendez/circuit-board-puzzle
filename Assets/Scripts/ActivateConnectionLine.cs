@@ -29,7 +29,6 @@ public class ActivateConnectionLine : MonoBehaviour
     private void Update()
     {
         CheckForVoltage();
-        Debug.Log(_targetVoltageMet);
     }
 
     public void UpdateCircuitPath()
@@ -91,6 +90,8 @@ public class ActivateConnectionLine : MonoBehaviour
                 k++;
             }
         }
+
+        _winCondition.CheckForWin();
     }
 
     private void HandleAllConnectionLines()

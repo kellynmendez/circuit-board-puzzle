@@ -8,6 +8,11 @@ public class GameManager : MonoBehaviour
     private BoardManager _boardManager;
     private InventoryManager _inventoryManager;
 
+    [Header("Feedback")]
+    [SerializeField] AudioClip _switchFX = null;
+
+    AudioSource _audioSource = null;
+
     public enum GameState
     {
         CircuitBoard,
@@ -16,6 +21,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _boardManager = FindObjectOfType<BoardManager>();
         _inventoryManager = FindObjectOfType<InventoryManager>();
     }
@@ -50,6 +56,11 @@ public class GameManager : MonoBehaviour
     {
         CurrentGameState = gameState;
 
+        if (gameState == GameState.Inventory)
+        {
+            PlaySwitchFX();
+        }
+
         switch (CurrentGameState)
         {
             case GameState.CircuitBoard:
@@ -77,5 +88,13 @@ public class GameManager : MonoBehaviour
     public GameState GetCurrentGameState()
     {
         return CurrentGameState;
+    }
+
+    private void PlaySwitchFX()
+    {
+        if (_audioSource != null && _switchFX != null)
+        {
+            _audioSource.PlayOneShot(_switchFX, _audioSource.volume);
+        }
     }
 }
