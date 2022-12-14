@@ -69,13 +69,21 @@ public class ActivateConnectionLine : MonoBehaviour
             while (added)
             {
                 added = false;
+                // Getting the circuit and its connected list
                 Circuit circ = _circuitPath[k];
                 List<CircuitCollider> connectedList = circ.GetConnectedList();
+                // Getting the circuit before this one
                 Circuit prev = circ.GetPreviousCircuit();
+                // Check each circuit that is connected to this one; if the circuit
+                //      connected to this one is NOT the one before it, then that
+                //      circuit is the one after this circuit, and should be added
+                //      to the path
                 for (int i = 0; i < connectedList.Count && !added; i++)
                 {
+
                     Circuit check = connectedList[i].GetCircuit();
-                    // If the circuit connected to this one is not its previous, then it is its next
+                    // If the circuit connected to this one is not its previous,
+                    //      then it is its next
                     if (check && check != prev)
                     {
                         added = true;
